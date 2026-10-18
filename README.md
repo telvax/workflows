@@ -13,3 +13,7 @@ jobs:
 ## Status
 
 No workflow here yet. The ones in use (`update-branches`, `dependabot-auto-merge`, `secrets`) are in [telvax/telvax](https://github.com/telvax/telvax) and move here only when a second repository needs them.
+
+## License
+
+Dual-licensed under MIT (`LICENSE-MIT`) or Apache 2.0 (`LICENSE-APACHE`), at your option.
