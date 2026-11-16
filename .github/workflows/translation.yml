@@ -1,0 +1,68 @@
+# The check of a translation repository of Telvax (docs-pt-br, docs-es, docs-zh-cn).
+#
+# It builds the documentation site of telvax/telvax the way the site workflow does, with the pull request (or
+# the push) in place of the main branch of the repository that calls it, and the other two languages as they are
+# on their main. A page that the site cannot convert, a missing `# Title` line, a broken link: all of it fails
+# here, before the daily build of the `dev` site would pick it up.
+#
+# Use it from a translation repository:
+#
+#   jobs:
+#     check:
+#       uses: telvax/workflows/.github/workflows/translation.yml@main
+name: Translation check
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      ASTRO_TELEMETRY_DISABLED: 1
+    defaults:
+      run:
+        working-directory: telvax/site
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          repository: telvax/telvax
+          path: telvax
+          fetch-depth: 0 # the date of each page's last change comes from git
+          persist-credentials: false
+      # The repository that calls this workflow is checked out at the commit of the event; the other two
+      # languages at their default branch (an empty ref).
+      - uses: actions/checkout@v7
+        with:
+          repository: telvax/docs-pt-br
+          ref: ${{ github.repository == 'telvax/docs-pt-br' && github.sha || '' }}
+          path: telvax/site/.translations/docs-pt-br
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: telvax/docs-es
+          ref: ${{ github.repository == 'telvax/docs-es' && github.sha || '' }}
+          path: telvax/site/.translations/docs-es
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: telvax/docs-zh-cn
+          ref: ${{ github.repository == 'telvax/docs-zh-cn' && github.sha || '' }}
+          path: telvax/site/.translations/docs-zh-cn
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: telvax/site/package-lock.json
+      - run: npm ci
+      - name: Build the site with the translations
+        run: npm run build
+      - name: Check the links
+        run: node scripts/check-links.mjs
