@@ -17,9 +17,13 @@ jobs:
     uses: telvax/workflows/.github/workflows/<name>.yml@main
 ```
 
-## Status
+## Workflows
 
-No workflow here yet. The ones in use (`update-branches`, `dependabot-auto-merge`, `secrets`) are in [telvax/telvax](https://github.com/telvax/telvax) and move here only when a second repository needs them.
+| Workflow | What it does | Used by |
+|---|---|---|
+| [`translation.yml`](.github/workflows/translation.yml) | Builds the documentation site of `telvax/telvax` with the translation in the pull request and the other two languages as they are, then checks the links. | `docs-pt-br`, `docs-es`, `docs-zh-cn` |
+
+The ones in use for the compiler (`update-branches`, `dependabot-auto-merge`, `secrets`) are in [telvax/telvax](https://github.com/telvax/telvax) and move here only when a second repository needs them.
 
 ## License
 
